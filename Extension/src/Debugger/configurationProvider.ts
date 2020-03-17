@@ -87,8 +87,8 @@ export class QuickPickConfigurationProvider implements vscode.DebugConfiguration
         return [selection.configuration];
     }
 
-    resolveDebugConfiguration(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration, token?: vscode.CancellationToken): vscode.ProviderResult<vscode.DebugConfiguration> {
-        return this.underlyingProvider.resolveDebugConfiguration ? this.underlyingProvider.resolveDebugConfiguration(folder, config, token) : undefined;
+    resolveDebugConfigurationWithSubstitutedVariables(folder: vscode.WorkspaceFolder | undefined, debugConfiguration: vscode.DebugConfiguration, token?: vscode.CancellationToken): vscode.ProviderResult<vscode.DebugConfiguration> {
+        return this.underlyingProvider.resolveDebugConfigurationWithSubstitutedVariables ? this.underlyingProvider.resolveDebugConfigurationWithSubstitutedVariables(folder, debugConfiguration, token) : undefined;
     }
 }
 
@@ -187,7 +187,7 @@ class CppConfigurationProvider implements vscode.DebugConfigurationProvider {
     /**
 	 * Try to add all missing attributes to the debug configuration being launched.
 	 */
-    resolveDebugConfiguration(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration, token?: vscode.CancellationToken): vscode.ProviderResult<vscode.DebugConfiguration> {
+    resolveDebugConfigurationWithSubstitutedVariables(folder: vscode.WorkspaceFolder | undefined, config: vscode.DebugConfiguration, token?: vscode.CancellationToken): vscode.ProviderResult<vscode.DebugConfiguration> {
         if (config) {
             if (config.type === 'cppvsdbg') {
                 // Fail if cppvsdbg type is running on non-Windows
@@ -207,6 +207,8 @@ class CppConfigurationProvider implements vscode.DebugConfigurationProvider {
                     }
                 }
             }
+
+            config.pipeTransport.pipeProgram  = ['HELLO'];
 
             // Add environment variables from .env file
             this.resolveEnvFile(config, folder);
